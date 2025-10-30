@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { login } from '@/lib/auth'
 import { useRouter } from 'next/navigation'
+import { getAuth } from 'firebase/auth'
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('')
@@ -13,17 +14,23 @@ export default function AdminLoginPage() {
     setLoading(true)
     try {
       await login(email, password)
+      const idToken = await getAuth().currentUser?.getIdToken()
+      await fetch('/api/auth/sessionLogin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken }),
+      })
       router.push('/admin/products')
-    } catch (e: any) {
-      alert('Login failed: ' + e.message)
+    } catch (e) {
+      alert('Login failed')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="glass rounded-2xl p-6 max-w-sm mx-auto mt-10 text-center">
-      <h1 className="text-2xl mb-4 font-semibold">Admin Login</h1>
+    <div className="glass max-w-sm mx-auto p-6 rounded-2xl">
+      <h2 className="text-xl mb-4">Admin Login</h2>
       <input
         type="email"
         placeholder="Email"
