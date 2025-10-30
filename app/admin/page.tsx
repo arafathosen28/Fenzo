@@ -1,53 +1,63 @@
 'use client'
-import { useState } from 'react'
-import { login } from '@/lib/auth'
-import { useRouter } from 'next/navigation'
-import { getAuth } from 'firebase/auth'
+import { useEffect, useState } from 'react'
+import { AdminProductForm } from '@/components/AdminProductForm'
 
-export default function AdminLoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
+type Product = {
+  id: string
+  name: string
+  code: string
+  price: number
+  offerPrice?: number | null
+  stock: number
+  images?: string[]
+}
 
-  const handleLogin = async () => {
-    setLoading(true)
-    try {
-      await login(email, password)
-      const idToken = await getAuth().currentUser?.getIdToken()
-      await fetch('/api/auth/sessionLogin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken }),
-      })
-      router.push('/admin/products')
-    } catch (e) {
-      alert('Login failed')
-    } finally {
-      setLoading(false)
+export default function AdminProductsPage() {
+  const [list, setList] = useState<Product[]>([])
+  const [editing, setEditing] = useState<Product|undefined>(undefined)
+
+  const load = async () => {
+    const res = await fetch('/api/admin/products')
+    const data = await res.json()
+    setList(data)
+  }
+
+  useEffect(() => { load() }, [])
+
+  const onDelete = async (id: string) => {
+    if (!confirm('Delete this product?')) return
+    const res = await fetch(`/api/admin/products/${id}`, { method: 'DELETE' })
+    if (res.ok) {
+      setList(prev => prev.filter(p => p.id !== id))
+    } else {
+      alert('Delete failed')
     }
   }
 
   return (
-    <div className="glass max-w-sm mx-auto p-6 rounded-2xl">
-      <h2 className="text-xl mb-4">Admin Login</h2>
-      <input
-        type="email"
-        placeholder="Email"
-        className="glass w-full p-3 mb-3 rounded-xl"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        className="glass w-full p-3 mb-3 rounded-xl"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-      />
-      <button onClick={handleLogin} disabled={loading} className="btn-glass w-full">
-        {loading ? 'Logging in...' : 'Login'}
-      </button>
+    <div className="grid md:grid-cols-2 gap-6">
+      <div className="glass rounded-2xl p-6">
+        <h2 className="text-xl mb-4">Products</h2>
+        <div className="space-y-3 max-h-[70vh] overflow-auto pr-2">
+          {list.map(p => (
+            <div key={p.id} className="flex justify-between items-center border-b border-white/10 pb-3">
+              <div>
+                <div className="font-medium">{p.name} <span className="text-white/60">({p.code})</span></div>
+                <div>৳{p.offerPrice ?? p.price}</div>
+                <div className="text-xs text-white/60">{p.stock} in stock</div>
+              </div>
+              <div className="flex gap-2">
+                <button className="btn-glass text-sm" onClick={()=>setEditing(p)}>Edit</button>
+                <button className="btn-glass text-sm" onClick={()=>onDelete(p.id)}>Delete</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="glass rounded-2xl p-6">
+        <h2 className="text-xl mb-4">{editing ? 'Edit Product' : 'Add Product'}</h2>
+        <AdminProductForm initial={editing} />
+      </div>
     </div>
   )
 }
