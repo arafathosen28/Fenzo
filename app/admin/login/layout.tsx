@@ -1,37 +1,41 @@
-'use client'
-import { useEffect, useState } from 'react'
-import { auth } from '@/lib/firebase'
-import { onAuthStateChanged } from 'firebase/auth'
-import { useRouter } from 'next/navigation'
+// app/admin/layout.tsx  (no 'use client')
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+import admin from 'firebase-admin'
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState<any>(null)
-  const router = useRouter()
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    }),
+  })
+}
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
-      if (!u) router.push('/admin/login')
-      else {
-        setUser(u)
-        setLoading(false)
-      }
-    })
-    return () => unsub()
-  }, [router])
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const cookieStore = cookies()
+  const sessionCookie = cookieStore.get('fenzo_session')?.value
+  if (!sessionCookie) return redirect('/admin/login')
 
-  if (loading) return <div className="p-6 text-center">Checking authentication...</div>
-
-  return (
-    <div className="grid gap-6">
-      <div className="glass rounded-2xl p-4 flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl">Fenzo Admin</h1>
-          <p className="text-white/70">Products, Orders, and Settings</p>
+  try {
+    const decoded = await admin.auth().verifySessionCookie(sessionCookie, true)
+    if (!decoded?.admin) return redirect('/')
+    return (
+      <div className="grid gap-6">
+        <div className="glass rounded-2xl p-4 flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl">Fenzo Admin</h1>
+            <p className="text-white/70">Products, Orders, and Settings</p>
+          </div>
+          <form action="/api/auth/sessionLogout" method="post">
+            <button className="btn-glass text-sm">Logout</button>
+          </form>
         </div>
-        <button onClick={() => auth.signOut()} className="btn-glass text-sm">Logout</button>
+        {children}
       </div>
-      {children}
-    </div>
-  )
+    )
+  } catch (err) {
+    return redirect('/admin/login')
+  }
 }
