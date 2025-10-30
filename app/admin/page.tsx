@@ -1,38 +1,31 @@
+// app/admin/page.tsx
 'use client'
 import { useEffect, useState } from 'react'
+import { onAuthStateChanged, getIdTokenResult } from 'firebase/auth'
+import { auth } from '@/lib/firebase'
+import { AdminOrderTable } from '@/components/AdminOrderTable'
+import { getRecentOrders } from '@/lib/utils'
 
-export default function AdminHome() {
-  const [stats, setStats] = useState<{products: number, orders: number}>({ products: 0, orders: 0 })
+export default function AdminPage() {
+  const [ok, setOk] = useState(false)
+  const [orders, setOrders] = useState<any[]>([])
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const [pRes, oRes] = await Promise.all([
-          fetch('/api/admin/products'),
-          fetch('/api/admin/orders')
-        ])
-        const [p, o] = await Promise.all([pRes.json(), oRes.json()])
-        setStats({ products: p.length || 0, orders: o.length || 0 })
-      } catch {
-        console.warn('Failed to load dashboard stats')
-      }
-    }
-    load()
+    const unsub = onAuthStateChanged(auth, async (u) => {
+      if (!u) return setOk(false)
+      const t = await getIdTokenResult(u)
+      const isAdmin = !!t.claims.admin
+      setOk(isAdmin)
+      if (isAdmin) setOrders(await getRecentOrders())
+    })
+    return () => unsub()
   }, [])
 
+  if (!ok) return <div className="text-center">Admins only</div>
   return (
-    <div className="glass rounded-2xl p-6">
-      <h2 className="text-xl mb-4 font-semibold">Admin Dashboard</h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <div className="glass p-4 rounded-xl text-center">
-          <h3 className="text-lg font-semibold">Products</h3>
-          <p className="text-3xl font-bold">{stats.products}</p>
-        </div>
-        <div className="glass p-4 rounded-xl text-center">
-          <h3 className="text-lg font-semibold">Orders</h3>
-          <p className="text-3xl font-bold">{stats.orders}</p>
-        </div>
-      </div>
+    <div>
+      <h1 className="text-xl mb-4">Orders</h1>
+      <AdminOrderTable orders={orders} />
     </div>
   )
 }
