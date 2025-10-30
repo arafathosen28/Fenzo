@@ -1,7 +1,11 @@
 'use client'
 import { useState } from 'react'
+type Props = {
+  sizes?: string[]
+  colors?: string[]
+}
 
-export function SizeColorPicker({ sizes = [], colors = [] as string[] }) {
+export function SizeColorPicker({ sizes = [], colors = [] }: Props) {
   const [size, setSize] = useState(sizes[0])
   const [color, setColor] = useState(colors[0])
 
