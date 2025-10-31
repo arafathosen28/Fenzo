@@ -8,7 +8,6 @@ export function Navbar() {
       <nav className="flex items-center gap-4">
         <Link href="/" className="hover:opacity-80">Home</Link>
         <Link href="/cart" className="hover:opacity-80">Cart</Link>
-        <Link href="/admin" className="hover:opacity-80">Admin</Link>
       </nav>
     </header>
   )
