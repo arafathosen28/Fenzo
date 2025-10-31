@@ -16,8 +16,7 @@ html, body {
 }
 
 body {
-  @apply antialiased;
-  color: #e5e7eb;
+  @apply text-white antialiased;
   background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
   position: relative;
   overflow-x: hidden;
