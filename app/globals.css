@@ -21,6 +21,7 @@ body {
   @apply text-gray-900;
   background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
   position: relative;
+  color: var(--text-primary);
 }
 
 body::before {
@@ -37,6 +38,7 @@ body::before {
   z-index: 0;
 }
 
+/* Glass card with proper text color */
 .glass {
   backdrop-filter: blur(16px) saturate(180%);
   background: var(--glass-white);
@@ -45,6 +47,7 @@ body::before {
     0 8px 32px rgba(31, 38, 135, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   position: relative;
+  color: var(--text-primary);
 }
 
 .glass::before {
@@ -60,11 +63,26 @@ body::before {
   pointer-events: none;
 }
 
+/* Ensure all text inside glass elements is dark */
+.glass * {
+  color: inherit;
+}
+
+.glass h1, .glass h2, .glass h3, .glass h4, .glass h5, .glass h6 {
+  color: var(--text-primary);
+}
+
+.glass p, .glass span, .glass div {
+  color: var(--text-primary);
+}
+
+/* Button with proper text color */
 .btn-glass {
   @apply rounded-full border-2 border-white/60 bg-white/40 backdrop-blur-md px-6 py-2.5 font-medium transition-all duration-300;
   box-shadow: 
     0 4px 15px rgba(99, 102, 241, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  color: var(--text-primary);
 }
 
 .btn-glass:hover {
@@ -72,16 +90,24 @@ body::before {
   box-shadow: 
     0 8px 25px rgba(99, 102, 241, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  color: var(--accent);
 }
 
 .btn-glass:active {
   @apply translate-y-0;
 }
 
+/* Link with proper colors */
 .link {
   @apply underline decoration-gray-400 underline-offset-4 transition-colors hover:decoration-indigo-500;
+  color: var(--text-primary);
 }
 
+.link:hover {
+  color: var(--accent);
+}
+
+/* Floating contact buttons */
 .floating-contact {
   position: fixed;
   bottom: 24px;
@@ -100,6 +126,7 @@ body::before {
   box-shadow: 
     0 8px 32px rgba(31, 38, 135, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
 }
 
 .floating-btn:hover {
@@ -107,10 +134,16 @@ body::before {
   box-shadow: 
     0 12px 40px rgba(99, 102, 241, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 1);
+  color: var(--accent);
 }
 
 .floating-btn:active {
   @apply scale-105;
+}
+
+/* Icon colors inside floating buttons */
+.floating-btn svg {
+  color: currentColor;
 }
 
 /* Smooth scroll */
@@ -137,4 +170,23 @@ html {
     rgba(255, 255, 255, 0.5) 100%
   );
   background-size: 1000px 100%;
+}
+
+/* Additional text color utilities */
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+/* Ensure form inputs have proper text color */
+input, textarea, select {
+  color: var(--text-primary);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-secondary);
 }
