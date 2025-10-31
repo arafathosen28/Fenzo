@@ -141,9 +141,180 @@ body::before {
   @apply scale-105;
 }
 
+/* WhatsApp specific styling */
+.floating-btn.whatsapp {
+  background: rgba(37, 211, 102, 0.15);
+  border: 1px solid rgba(37, 211, 102, 0.3);
+}
+
+.floating-btn.whatsapp:hover {
+  background: rgba(37, 211, 102, 0.25);
+  color: #25D366;
+}
+
+/* Facebook specific styling */
+.floating-btn.facebook {
+  background: rgba(24, 119, 242, 0.15);
+  border: 1px solid rgba(24, 119, 242, 0.3);
+}
+
+.floating-btn.facebook:hover {
+  background: rgba(24, 119, 242, 0.25);
+  color: #1877F2;
+}
+
+/* WhatsApp contact list */
+.whatsapp-contacts {
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.whatsapp-contacts.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
+}
+
+.whatsapp-contact {
+  @apply px-4 py-2.5 rounded-full flex items-center gap-2 cursor-pointer transition-all duration-300;
+  backdrop-filter: blur(16px) saturate(180%);
+  background: rgba(37, 211, 102, 0.15);
+  border: 1px solid rgba(37, 211, 102, 0.3);
+  box-shadow: 
+    0 4px 20px rgba(37, 211, 102, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  color: var(--text-primary);
+  white-space: nowrap;
+  animation: slideIn 0.3s ease-out backwards;
+}
+
+.whatsapp-contact:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.whatsapp-contact:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.whatsapp-contact:hover {
+  @apply -translate-y-1;
+  background: rgba(37, 211, 102, 0.25);
+  box-shadow: 
+    0 8px 30px rgba(37, 211, 102, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 /* Icon colors inside floating buttons */
 .floating-btn svg {
   color: currentColor;
+}
+
+/* Product grid styling with better contrast */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 12px;
+  }
+}
+
+.product-card {
+  backdrop-filter: blur(16px) saturate(180%);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 
+    0 5px 15px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.product-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,255,255,0.4));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Product card content */
+.product-image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.product-info {
+  padding: 16px;
+}
+
+.product-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.product-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.product-description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
 }
 
 /* Smooth scroll */
