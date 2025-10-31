@@ -3,31 +3,142 @@
 @tailwind utilities;
 
 :root {
-  --bg-start: #14161c;
-  --bg-end: #0f1116;
+  --bg-start: #f8f9fa;
+  --bg-end: #e9ecef;
+  --glass-bg: rgba(255, 255, 255, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --text-primary: #1a1a1a;
+  --text-secondary: #666666;
+  --accent: #4f46e5;
 }
 
 html, body {
   height: 100%;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
-  @apply text-white;
+  color: var(--text-primary);
   background: radial-gradient(ellipse at top left, var(--bg-start), var(--bg-end));
+  position: relative;
+}
+
+/* Subtle animated background pattern */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(79, 70, 229, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .glass {
-  backdrop-filter: blur(8px);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(20px);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  position: relative;
+}
+
+.glass::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
 }
 
 .btn-glass {
-  @apply rounded-full border border-white/20 bg-white/10 backdrop-blur-sm px-5 py-2 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/20;
+  @apply rounded-full border border-black/10 bg-white/40 backdrop-blur-md px-6 py-2.5 transition-all duration-300 font-medium;
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.btn-glass:hover {
+  @apply -translate-y-0.5 bg-white/60;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.btn-glass:active {
+  @apply translate-y-0;
+}
+
+.btn-primary {
+  @apply rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-6 py-2.5 transition-all duration-300 font-medium;
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3);
+}
+
+.btn-primary:hover {
+  @apply -translate-y-0.5;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
 }
 
 .link {
-  @apply underline decoration-white/30 underline-offset-4 hover:decoration-accent;
+  @apply underline decoration-black/20 underline-offset-4 hover:decoration-indigo-500 transition-colors;
+}
+
+/* Floating social buttons */
+.floating-social {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1000;
+}
+
+.social-btn {
+  @apply w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300;
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.social-btn:hover {
+  @apply -translate-y-1 scale-110;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.social-btn.whatsapp:hover {
+  background: rgba(37, 211, 102, 0.2);
+}
+
+.social-btn.facebook:hover {
+  background: rgba(24, 119, 242, 0.2);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Card hover effect */
+.product-card {
+  @apply glass rounded-2xl overflow-hidden transition-all duration-300;
+}
+
+.product-card:hover {
+  @apply -translate-y-2;
+  box-shadow: 
+    0 16px 40px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
