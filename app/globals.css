@@ -1,190 +1,116 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+'use client'
+import Link from 'next/link'
+import { useQuery } from '@tanstack/react-query'
+import { getFeaturedProducts } from '@/lib/utils'
+import { ProductCard } from '@/components/ProductCard'
+import { ShoppingBag, Sparkles, TrendingUp, Truck, Shield } from 'lucide-react'
 
-:root {
-  --bg-start: #0f1419;
-  --bg-end: #1a1f2e;
-  --accent: #60a5fa;
-  --glass-bg: rgba(30, 35, 50, 0.6);
-  --glass-border: rgba(96, 165, 250, 0.2);
-}
+export default function HomePage() {
+  const { data, isLoading } = useQuery({
+    queryKey: ['featured'],
+    queryFn: getFeaturedProducts
+  })
 
-html, body {
-  height: 100%;
-  color-scheme: dark;
-}
+  return (
+    <div className="space-y-12 animate-fadeInUp">
+      {/* Hero Section */}
+      <section className="glass rounded-3xl p-8 md:p-12 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl" />
+        
+        <div className="relative z-10 max-w-3xl">
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="w-6 h-6 text-white/70" />
+            <span className="text-white/80 font-medium">প্রিমিয়াম কালেকশন</span>
+          </div>
+          
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-white">
+            Fenzo
+          </h1>
+          
+          <p className="text-lg md:text-xl text-white/70 mb-8 leading-relaxed">
+            গ্লাসি লুক, এ্যালিগ্যান্ট স্টাইল। অনন্য ডিজাইন এবং সেরা মানের পোশাক।
+          </p>
+          
+          <div className="flex flex-wrap gap-4">
+            <Link href="#catalog" className="btn-glass flex items-center gap-2">
+              <ShoppingBag className="w-5 h-5" />
+              <span>Browse Collection</span>
+            </Link>
+            <Link href="/cart" className="btn-glass flex items-center gap-2">
+              <TrendingUp className="w-5 h-5" />
+              <span>কার্ট দেখুন</span>
+            </Link>
+          </div>
+        </div>
+      </section>
 
-body {
-  @apply text-gray-100 antialiased;
-  background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
-  position: relative;
-  overflow-x: hidden;
-}
+      {/* Featured Products Section */}
+      <section id="catalog" className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-2 text-white">Featured Products</h2>
+            <p className="text-white/60">আমাদের বাছাই করা সংগ্রহ</p>
+          </div>
+        </div>
 
-body::before {
-  content: '';
-  position: fixed;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle at 30% 20%, rgba(96, 165, 250, 0.08) 0%, transparent 50%),
-              radial-gradient(circle at 70% 60%, rgba(168, 85, 247, 0.06) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div 
+                key={i} 
+                className="glass rounded-3xl h-80 shimmer"
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {data?.map((p, index) => (
+              <div 
+                key={p.id} 
+                className="animate-fadeInUp"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <ProductCard product={p} />
+              </div>
+            ))}
+          </div>
+        )}
 
-.glass {
-  backdrop-filter: blur(20px) saturate(180%);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 
-              inset 0 1px 0 rgba(96, 165, 250, 0.1);
-  position: relative;
-  overflow: hidden;
-}
+        {!isLoading && data && data.length === 0 && (
+          <div className="glass rounded-3xl p-12 text-center">
+            <ShoppingBag className="w-16 h-16 mx-auto mb-4 text-white/30" />
+            <p className="text-xl text-white/60">কোন পণ্য পাওয়া যায়নি</p>
+          </div>
+        )}
+      </section>
 
-.glass::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.1), transparent);
-  transition: left 0.5s;
-}
+      {/* Info Cards */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="glass rounded-3xl p-6 hover:scale-105 transition-transform duration-300">
+          <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mb-4">
+            <Shield className="w-6 h-6 text-white/70" />
+          </div>
+          <h3 className="text-xl font-semibold mb-2 text-white">প্রিমিয়াম কোয়ালিটি</h3>
+          <p className="text-white/60">সেরা মানের উপকরণ দিয়ে তৈরি</p>
+        </div>
 
-.glass:hover::before {
-  left: 100%;
-}
+        <div className="glass rounded-3xl p-6 hover:scale-105 transition-transform duration-300">
+          <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mb-4">
+            <Sparkles className="w-6 h-6 text-white/70" />
+          </div>
+          <h3 className="text-xl font-semibold mb-2 text-white">ট্রেন্ডি ডিজাইন</h3>
+          <p className="text-white/60">সর্বশেষ ফ্যাশন ট্রেন্ড</p>
+        </div>
 
-.btn-glass {
-  @apply rounded-full border border-blue-400/30 bg-blue-500/20 backdrop-blur-sm px-6 py-3 
-         font-medium text-gray-100 transition-all duration-300 hover:scale-105 hover:bg-blue-500/30 
-         hover:border-blue-400/50 hover:shadow-lg hover:shadow-blue-500/30 active:scale-95;
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-glass::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(96, 165, 250, 0.2);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
-}
-
-.btn-glass:hover::after {
-  width: 300px;
-  height: 300px;
-}
-
-.link {
-  @apply relative inline-block text-gray-200 transition-colors duration-300 hover:text-blue-400;
-}
-
-.link::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #60a5fa, #a855f7);
-  transition: width 0.3s ease;
-}
-
-.link:hover::after {
-  width: 100%;
-}
-
-/* Floating Social Icons */
-.floating-social {
-  position: fixed;
-  right: 24px;
-  bottom: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  z-index: 1000;
-}
-
-.social-icon {
-  @apply w-14 h-14 rounded-full flex items-center justify-center 
-         backdrop-blur-md bg-blue-500/20 border border-blue-400/30
-         transition-all duration-300 hover:scale-110 hover:bg-blue-500/30
-         shadow-lg hover:shadow-xl hover:shadow-blue-500/40
-         cursor-pointer;
-}
-
-.social-icon svg {
-  @apply text-blue-300;
-}
-
-.social-icon:hover svg {
-  @apply text-blue-100;
-}
-
-/* Smooth Scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(30, 35, 50, 0.5);
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(96, 165, 250, 0.3);
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(96, 165, 250, 0.5);
-}
-
-/* Animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fadeInUp {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-.shimmer {
-  background: linear-gradient(90deg, 
-    rgba(96, 165, 250, 0.05) 25%, 
-    rgba(96, 165, 250, 0.15) 50%, 
-    rgba(96, 165, 250, 0.05) 75%);
-  background-size: 1000px 100%;
-  animation: shimmer 2s infinite;
+        <div className="glass rounded-3xl p-6 hover:scale-105 transition-transform duration-300">
+          <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mb-4">
+            <Truck className="w-6 h-6 text-white/70" />
+          </div>
+          <h3 className="text-xl font-semibold mb-2 text-white">দ্রুত ডেলিভারি</h3>
+          <p className="text-white/60">দ্রুত এবং নিরাপদ পৌঁছানো</p>
+        </div>
+      </section>
+    </div>
+  )
 }
