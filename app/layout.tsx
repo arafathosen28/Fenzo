@@ -4,6 +4,18 @@ import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import Providers from '@/components/Providers'
 import { MessageCircle, Facebook } from 'lucide-react'
+import FloatingContact from './components/FloatingContact';
+
+function App() {
+  return (
+    <>
+      <Navbar />
+      {/* Your other components */}
+      <Footer />
+      <FloatingContact />
+    </>
+  );
+}
 
 export const metadata: Metadata = {
   title: 'Fenzo — Premium Clothing',
